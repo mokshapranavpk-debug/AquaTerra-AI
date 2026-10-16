@@ -240,7 +240,7 @@ st.markdown("""
 - **Site mapping:** plot verified coordinates on a map.
 - **AI experimentation:** evaluate a model only when suitable, reliable data
   and an appropriate validation method are available.
-""")import html
+""") import html
 import hmac
 from datetime import date
 from functools import partial
