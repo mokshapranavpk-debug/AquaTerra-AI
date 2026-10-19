@@ -18,13 +18,13 @@ from supabase import create_client
 # ============================================================
 
 st.set_page_config(
-    page_title="JAL-DRISHTI | Research Dashboard",
+    page_title="AquaTerra AI | Research Dashboard",
     page_icon="💧",
     layout="wide",
 )
 
-st.title("💧 JAL-DRISHTI")
-st.subheader("Advanced Groundwater Recharge Research Dashboard")
+st.title("💧 AquaTerra AI")
+st.subheader("Land & Water Intelligence")
 st.caption(
     "AI-assisted mapping • Field observations • Statistical exploration"
 )
@@ -128,7 +128,7 @@ if not st.session_state.authenticated:
 # ============================================================
 
 with st.sidebar:
-    st.title("💧 JAL-DRISHTI")
+    st.title("💧 AquaTerra AI")
     st.caption("Scientific research workspace")
     st.divider()
 
@@ -953,7 +953,7 @@ if save_clicked:
 
 st.divider()
 st.caption(
-    "JAL-DRISHTI | Exploratory research tool. Statistical patterns are "
+    "AquaTerra AI| Exploratory research tool. Statistical patterns are "
     "not proof of groundwater recharge. Use verified measurements, "
     "document methods and validate findings in the field."
 )
