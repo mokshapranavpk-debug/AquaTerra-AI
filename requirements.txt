@@ -1,7 +1,8 @@
 streamlit
 pandas
+numpy
+requests
 folium
 streamlit-folium
-supabase
 plotly
-
+supabase
