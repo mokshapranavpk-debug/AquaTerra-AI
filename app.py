@@ -897,12 +897,27 @@ with st.sidebar:
     st.divider()
     if st.button("🔄 Refresh", use_container_width=True):
         st.rerun()
-    if st.button("🔌 Test database connection", use_container_width=True):
+       if st.button("🔌 Test database connection", use_container_width=True):
         try:
-            db.table("field_observations").select("sample_id").limit(1).execute()
+            response = (
+                db.table("field_observations")
+                .select("sample_id")
+                .limit(1)
+                .execute()
+            )
+
             st.success("Supabase connection successful.")
-        except Exception:
-            st.error("Connection failed. Check Supabase permissions and Cloud logs.")
+            st.write(f"Database query completed successfully.")
+            st.write(f"Rows returned: {len(response.data or [])}")
+
+        except Exception as exc:
+            st.error("Supabase connection test failed.")
+            st.write("**Error type:**", type(exc).__name__)
+            st.code(str(exc))
+            st.warning(
+                "Check the Supabase URL, API key, table name, "
+                "permissions and Row Level Security policies."
+            )
     if st.button("Log out", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
@@ -931,10 +946,16 @@ def load_observations():
 try:
     records = load_observations()
     df = pd.DataFrame(records)
-except Exception:
-    st.error("Could not load observations. Check table permissions and Streamlit Cloud logs.")
+except Exception as exc:
+    st.error("Could not load observations from Supabase.")
+    st.write("**Error type:**", type(exc).__name__)
+    st.code(str(exc))
+    st.warning(
+        "Check whether public.field_observations exists, "
+        "whether the required columns exist, and whether the API key "
+        "has permission to read the table."
+    )
     st.stop()
-
 if not df.empty:
     if "observation_date" in df:
         df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
@@ -1081,8 +1102,14 @@ with add_tab:
             try:
                 db.table("field_observations").insert(record).execute()
                 st.success(f"Observation {sample_id} saved."); st.rerun()
-            except Exception:
-                st.error("Could not save this observation. Check if the Sample ID already exists, table constraints and Cloud logs.")
-
+                       except Exception as exc:
+                st.error("Could not save this observation to Supabase.")
+                st.write("**Error type:**", type(exc).__name__)
+                st.code(str(exc))
+                st.warning(
+                    "Possible causes include a duplicate Sample ID, "
+                    "a missing database column, a table constraint, "
+                    "or insufficient INSERT permissions."
+                )
 st.divider()
 st.caption("AquaTerra AI is an exploratory research tool. Terrain colours, rainfall estimates and statistical relationships are not proof of groundwater recharge. Validate findings in the field.")
