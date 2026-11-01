@@ -895,9 +895,30 @@ with st.sidebar:
     st.title("💧 AquaTerra AI")
     page = st.radio("Workspace", ["Research Dashboard", "Map Explorer & Land Advisor"], key="aquaterra_page")
     st.divider()
-    if st.button("🔄 Refresh", use_container_width=True):
+        if st.button("🔄 Refresh", use_container_width=True):
         st.rerun()
-       if st.button("🔌 Test database connection", use_container_width=True):
+
+    if st.button("🔌 Test database connection", use_container_width=True):
+        try:
+            response = (
+                db.table("field_observations")
+                .select("sample_id")
+                .limit(1)
+                .execute()
+            )
+
+            st.success("Supabase connection successful.")
+            st.write("Database query completed successfully.")
+            st.write(f"Rows returned: {len(response.data or [])}")
+
+        except Exception as exc:
+            st.error("Supabase connection test failed.")
+            st.write("**Error type:**", type(exc).__name__)
+            st.code(str(exc))
+            st.warning(
+                "Check the Supabase URL, API key, table name, "
+                "permissions and Row Level Security policies."
+            )
         try:
             response = (
                 db.table("field_observations")
@@ -1100,9 +1121,20 @@ with add_tab:
                       "latitude": lat if coords_verified else None, "longitude": lon if coords_verified else None,
                       "coordinates_verified": coords_verified, "notes": notes.strip() or None}
             try:
+                            try:
                 db.table("field_observations").insert(record).execute()
-                st.success(f"Observation {sample_id} saved."); st.rerun()
-                       except Exception as exc:
+                st.success(f"Observation {sample_id} saved.")
+                st.rerun()
+
+            except Exception as exc:
+                st.error("Could not save this observation to Supabase.")
+                st.write("**Error type:**", type(exc).__name__)
+                st.code(str(exc))
+                st.warning(
+                    "Possible causes include a duplicate Sample ID, "
+                    "a missing database column, a table constraint, "
+                    "or insufficient INSERT permissions."
+                )
                 st.error("Could not save this observation to Supabase.")
                 st.write("**Error type:**", type(exc).__name__)
                 st.code(str(exc))
